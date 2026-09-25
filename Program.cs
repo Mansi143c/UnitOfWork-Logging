@@ -1,19 +1,29 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
-
+//Logging in file
+LoggingConfig.Configure();
 var services = new ServiceCollection();
+services.AddLogging(config =>
+{
+    config.AddSerilog(Log.Logger);
+});
+//////////////////////////For logging in console/////////////////////////
+///
+/*
 services.AddLogging(config =>
 {
     config.AddConsole();
 });
-
+*/
 services.AddTransient<IOrderRepo,OrderRepo>();
 services.AddTransient<IProductRepo, ProductRepo>();
 services.AddTransient<UnitOfWork>();
+services.AddTransient<IOrderService, OrderService>();
 
 var serviceProvider = services.BuildServiceProvider();
-var unitOfWork = serviceProvider.GetRequiredService<UnitOfWork>();
+var orderService = serviceProvider.GetRequiredService<IOrderService>();
 
 
 Products product = new Products
@@ -27,10 +37,7 @@ Orders orders = new Orders
     Id = 1,
     ProductName = product.Name,
 };
-unitOfWork._orders.add(orders);
-unitOfWork._products.add(product);
-unitOfWork._products.ReduceStock(product);
-unitOfWork.SaveChanges();
+orderService.placeOrder(product, orders);
 
 
 
