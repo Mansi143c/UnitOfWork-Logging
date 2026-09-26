@@ -9,6 +9,10 @@ public class ProductRepo : IProductRepo
     }
     public void add(Products p)
     {
+        if (p.Name == null)
+        {
+            throw new ArgumentNullException(nameof(p.Name),"Product name cannot be null or empty.");
+        }
         _products.Add(p);
         Console.WriteLine("Products added");
         _logger.LogInformation("Product {Id} added", p.Id);
@@ -16,6 +20,10 @@ public class ProductRepo : IProductRepo
     }
     public void ReduceStock(Products product)
     {
+        if (product.Stock <= 0) 
+        {
+            throw new InvalidOperationException("Product is out of Stock.");
+        }
         product.Stock = product.Stock - 1;
         Console.WriteLine("Stock reduced to " + product.Stock);
         _logger.LogInformation("Remaining items " +  product.Stock);
